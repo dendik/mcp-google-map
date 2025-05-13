@@ -120,10 +120,10 @@ export class PlacesSearcher {
           phone: details.formatted_phone_number,
           website: details.website,
           price_level: details.price_level,
-          reviews: details.reviews?.map((review: { rating: number; text: string; time: number; author_name: string }) => ({
+          reviews: details.reviews?.map((review: { rating: number; text: string; time: any; author_name: string }) => ({
             rating: review.rating,
             text: review.text,
-            time: review.time,
+            time: typeof review.time === 'string' ? parseInt(review.time, 10) : review.time,
             author_name: review.author_name,
           })),
         },
