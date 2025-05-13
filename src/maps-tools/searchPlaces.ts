@@ -97,9 +97,15 @@ export class PlacesSearcher {
         })),
       };
     } catch (error) {
+      let errorMsg = "An error occurred during search";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred during search",
+        error: errorMsg,
       };
     }
   }
@@ -129,9 +135,15 @@ export class PlacesSearcher {
         },
       };
     } catch (error) {
+      let errorMsg = "An error occurred while getting details";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred while getting details",
+        error: errorMsg,
       };
     }
   }
@@ -145,9 +157,15 @@ export class PlacesSearcher {
         data: result,
       };
     } catch (error) {
+      let errorMsg = "An error occurred during geocoding";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred during geocoding",
+        error: errorMsg,
       };
     }
   }
@@ -161,9 +179,15 @@ export class PlacesSearcher {
         data: result,
       };
     } catch (error) {
+      let errorMsg = "An error occurred during reverse geocoding";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred during reverse geocoding",
+        error: errorMsg,
       };
     }
   }
@@ -177,9 +201,15 @@ export class PlacesSearcher {
         data: result,
       };
     } catch (error) {
+      let errorMsg = "An error occurred while calculating distance matrix";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred while calculating distance matrix",
+        error: errorMsg,
       };
     }
   }
@@ -193,9 +223,15 @@ export class PlacesSearcher {
         data: result,
       };
     } catch (error) {
+      let errorMsg = "An error occurred while getting directions";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred while getting directions",
+        error: errorMsg,
       };
     }
   }
@@ -209,9 +245,15 @@ export class PlacesSearcher {
         data: result,
       };
     } catch (error) {
+      let errorMsg = "An error occurred while getting elevation data";
+      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
+        errorMsg = (error as any).response.data.error.message;
+      } else if (error instanceof Error) {
+        errorMsg = error.message;
+      }
       return {
         success: false,
-        error: error instanceof Error ? error.message : "An error occurred while getting elevation data",
+        error: errorMsg,
       };
     }
   }
