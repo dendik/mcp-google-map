@@ -36,6 +36,18 @@ export const SEARCH_NEARBY_TOOL = {
     },
     required: ["center"],
   },
+  examples: [
+    {
+      center: { value: "Osaka, Japan", isCoordinates: false },
+      keyword: "restaurant",
+      radius: 1000
+    },
+    {
+      center: { value: "34.6937,135.5023", isCoordinates: true },
+      keyword: "tourist_attraction",
+      radius: 5000
+    }
+  ]
 };
 
 export const GEOCODE_TOOL = {
@@ -51,6 +63,9 @@ export const GEOCODE_TOOL = {
     },
     required: ["address"],
   },
+  examples: [
+    { address: "1600 Amphitheatre Parkway, Mountain View, CA" }
+  ]
 };
 
 export const REVERSE_GEOCODE_TOOL = {
@@ -70,6 +85,9 @@ export const REVERSE_GEOCODE_TOOL = {
     },
     required: ["latitude", "longitude"],
   },
+  examples: [
+    { latitude: 37.4221, longitude: -122.0841 }
+  ]
 };
 
 export const DISTANCE_MATRIX_TOOL = {
@@ -101,6 +119,13 @@ export const DISTANCE_MATRIX_TOOL = {
     },
     required: ["origins", "destinations"],
   },
+  examples: [
+    {
+      origins: ["New York, NY", "Boston, MA"],
+      destinations: ["Philadelphia, PA", "Washington, DC"],
+      mode: "driving"
+    }
+  ]
 };
 
 export const DIRECTIONS_TOOL = {
@@ -126,6 +151,13 @@ export const DIRECTIONS_TOOL = {
     },
     required: ["origin", "destination"],
   },
+  examples: [
+    {
+      origin: "New York, NY",
+      destination: "Boston, MA",
+      mode: "driving"
+    }
+  ]
 };
 
 export const ELEVATION_TOOL = {
@@ -155,6 +187,9 @@ export const ELEVATION_TOOL = {
     },
     required: ["locations"],
   },
+  examples: [
+    { locations: [ { latitude: 37.4221, longitude: -122.0841 } ] }
+  ]
 };
 
 export const GET_PLACE_DETAILS_TOOL = {
@@ -170,4 +205,7 @@ export const GET_PLACE_DETAILS_TOOL = {
     },
     required: ["placeId"],
   },
+  examples: [
+    { placeId: "ChIJ2eUgeAK6j4ARbn5u_wAGqWA" }
+  ]
 };
