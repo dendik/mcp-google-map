@@ -49,62 +49,141 @@ export class GoogleMapsTools {
   }
 
   async searchNearbyPlaces(params: SearchParams): Promise<PlaceResult[]> {
-    const searchParams = {
-      location: params.location,
-      radius: params.radius || 1000,
-      keyword: params.keyword,
-      opennow: params.openNow,
-      language: this.defaultLanguage,
-      key: process.env.GOOGLE_MAPS_API_KEY || "",
-    };
-
     try {
-      const response = await this.client.placesNearby({
-        params: searchParams,
-      });
-
-      let results = response.data.results;
-
-      // Filter by minimum rating if specified
-      if (params.minRating) {
-        results = results.filter((place) => (place.rating || 0) >= (params.minRating || 0));
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
+      const radius = params.radius || 1000;
+      const requestBody: any = {
+        locationRestriction: {
+          circle: {
+            center: {
+              latitude: params.location.lat,
+              longitude: params.location.lng
+            },
+            radius: radius
+          }
+        },
+        maxResultCount: 20
+      };
+      if (params.keyword) {
+        requestBody.includedTypes = [params.keyword];
       }
-
-      return results as PlaceResult[];
+      if (params.openNow) {
+        requestBody.openNow = true;
+      }
+      // The new API does not support minRating filter directly, so filter after response
+      const response = await axios.post(
+        "https://places.googleapis.com/v1/places:searchNearby",
+        requestBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": apiKey,
+            "X-Goog-FieldMask": "places.displayName,places.id,places.formattedAddress,places.location,places.rating,places.userRatingCount,places.regularOpeningHours"
+          }
+        }
+      );
+      let results = response.data.places || [];
+      if (params.minRating) {
+        results = results.filter((place: any) => (place.rating || 0) >= params.minRating!);
+      }
+      // Map new API response to PlaceResult[]
+      return results.map((place: any) => ({
+        name: place.displayName?.text,
+        place_id: place.id,
+        formatted_address: place.formattedAddress,
+        geometry: {
+          location: {
+            lat: place.location?.latitude,
+            lng: place.location?.longitude
+          }
+        },
+        rating: place.rating,
+        user_ratings_total: place.userRatingCount,
+        opening_hours: {
+          open_now: place.regularOpeningHours?.openNow
+        }
+      }));
     } catch (error) {
-      console.error("Error in searchNearbyPlaces:", error);
-      throw new Error("Error occurred while searching nearby places");
+      console.error("Error in searchNearbyPlaces (Places API v1):", error);
+      throw new Error("Error occurred while searching nearby places (Places API v1)");
     }
   }
 
   async getPlaceDetails(placeId: string) {
     try {
-      const response = await this.client.placeDetails({
-        params: {
-          place_id: placeId,
-          fields: ["name", "rating", "formatted_address", "opening_hours", "reviews", "geometry", "formatted_phone_number", "website", "price_level", "photos"],
-          language: this.defaultLanguage,
-          key: process.env.GOOGLE_MAPS_API_KEY || "",
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
+      const fields = [
+        "displayName",
+        "formattedAddress",
+        "location",
+        "rating",
+        "userRatingCount",
+        "regularOpeningHours",
+        "internationalPhoneNumber",
+        "websiteUri",
+        "priceLevel",
+        "reviews",
+        "photos"
+      ].join(",");
+      const response = await axios.get(
+        `https://places.googleapis.com/v1/places/${placeId}?fields=${fields}`,
+        {
+          headers: {
+            "X-Goog-Api-Key": apiKey
+          }
+        }
+      );
+      const place = response.data;
+      return {
+        name: place.displayName?.text,
+        formatted_address: place.formattedAddress,
+        geometry: {
+          location: {
+            lat: place.location?.latitude,
+            lng: place.location?.longitude
+          }
         },
-      });
-      return response.data.result;
+        rating: place.rating,
+        user_ratings_total: place.userRatingCount,
+        opening_hours: {
+          open_now: place.regularOpeningHours?.openNow
+        },
+        formatted_phone_number: place.internationalPhoneNumber,
+        website: place.websiteUri,
+        price_level: place.priceLevel,
+        reviews: place.reviews?.map((review: any) => ({
+          rating: review.rating,
+          text: review.text?.text,
+          time: review.relativePublishTimeDescription,
+          author_name: review.authorAttribution?.displayName
+        })),
+        photos: place.photos
+      };
     } catch (error) {
-      console.error("Error in getPlaceDetails:", error);
-      throw new Error("Error occurred while getting place details");
+      console.error("Error in getPlaceDetails (Places API v1):", error);
+      throw new Error("Error occurred while getting place details (Places API v1)");
     }
   }
 
   private async geocodeAddress(address: string): Promise<GeocodeResult> {
     try {
-      const response = await this.client.geocode({
-        params: {
-          address: address,
-          key: process.env.GOOGLE_MAPS_API_KEY || "",
-          language: this.defaultLanguage,
-        },
-      });
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
 
-      if (response.data.results.length === 0) {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address: address,
+            key: apiKey,
+            language: this.defaultLanguage
+          }
+        }
+      );
+
+      if (!response.data.results || response.data.results.length === 0) {
         throw new Error("Location not found for this address");
       }
 
@@ -165,15 +244,21 @@ export class GoogleMapsTools {
     address_components: any[];
   }> {
     try {
-      const response = await this.client.reverseGeocode({
-        params: {
-          latlng: { lat: latitude, lng: longitude },
-          language: this.defaultLanguage,
-          key: process.env.GOOGLE_MAPS_API_KEY || "",
-        },
-      });
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
 
-      if (response.data.results.length === 0) {
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            latlng: `${latitude},${longitude}`,
+            key: apiKey,
+            language: this.defaultLanguage
+          }
+        }
+      );
+
+      if (!response.data.results || response.data.results.length === 0) {
         throw new Error("Address not found for these coordinates");
       }
 
@@ -315,27 +400,29 @@ export class GoogleMapsTools {
 
   async getElevation(locations: Array<{ latitude: number; longitude: number }>): Promise<Array<{ elevation: number; location: { lat: number; lng: number } }>> {
     try {
-      const formattedLocations = locations.map((loc) => ({
-        lat: loc.latitude,
-        lng: loc.longitude,
-      }));
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
 
-      const response = await this.client.elevation({
-        params: {
-          locations: formattedLocations,
-          key: process.env.GOOGLE_MAPS_API_KEY || "",
-        },
-      });
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/elevation/json`,
+        {
+          params: {
+            locations: locations.map(loc => `${loc.latitude},${loc.longitude}`).join('|'),
+            key: apiKey
+          }
+        }
+      );
 
-      const result = response.data;
-
-      if (result.status !== "OK") {
-        throw new Error(`Failed to get elevation data: ${result.status}`);
+      if (!response.data.results || response.data.results.length === 0) {
+        throw new Error("No elevation data found for the provided locations");
       }
 
-      return result.results.map((item: any, index: number) => ({
-        elevation: item.elevation,
-        location: formattedLocations[index],
+      return response.data.results.map((result: any) => ({
+        elevation: result.elevation,
+        location: {
+          lat: result.location.lat,
+          lng: result.location.lng
+        }
       }));
     } catch (error) {
       console.error("Error in getElevation:", error);
