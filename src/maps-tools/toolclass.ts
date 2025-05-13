@@ -104,9 +104,12 @@ export class GoogleMapsTools {
           open_now: place.regularOpeningHours?.openNow
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in searchNearbyPlaces (Places API v1):", error);
-      throw new Error("Error occurred while searching nearby places (Places API v1)");
+      if (error.response?.data?.error) {
+        throw new Error(error.response.data.error.message);
+      }
+      throw error;
     }
   }
 
@@ -161,9 +164,12 @@ export class GoogleMapsTools {
         })),
         photos: place.photos
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in getPlaceDetails (Places API v1):", error);
-      throw new Error("Error occurred while getting place details (Places API v1)");
+      if (error.response?.data?.error) {
+        throw new Error(error.response.data.error.message);
+      }
+      throw error;
     }
   }
 
@@ -195,9 +201,12 @@ export class GoogleMapsTools {
         formatted_address: result.formatted_address,
         place_id: result.place_id,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in geocodeAddress:", error);
-      throw new Error("Error occurred while converting address to coordinates");
+      if (error.response?.data?.error_message) {
+        throw new Error(error.response.data.error_message);
+      }
+      throw error;
     }
   }
 
@@ -231,7 +240,7 @@ export class GoogleMapsTools {
       };
     } catch (error) {
       console.error("Error in geocode:", error);
-      throw new Error("Error occurred while converting address to coordinates");
+      throw error;
     }
   }
 
@@ -268,9 +277,12 @@ export class GoogleMapsTools {
         place_id: result.place_id,
         address_components: result.address_components,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in reverseGeocode:", error);
-      throw new Error("Error occurred while converting coordinates to address");
+      if (error.response?.data?.error_message) {
+        throw new Error(error.response.data.error_message);
+      }
+      throw error;
     }
   }
 
@@ -334,9 +346,12 @@ export class GoogleMapsTools {
         origin_addresses: result.origin_addresses,
         destination_addresses: result.destination_addresses,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in calculateDistanceMatrix:", error);
-      throw new Error("Error occurred while calculating distance matrix");
+      if (error.response?.data?.error_message) {
+        throw new Error(error.response.data.error_message);
+      }
+      throw error;
     }
   }
 
@@ -351,7 +366,6 @@ export class GoogleMapsTools {
     total_duration: { value: number; text: string };
   }> {
     try {
-      // Map legacy modes to Routes API travelMode
       const travelModeMap: Record<string, string> = {
         driving: "DRIVE",
         walking: "WALK",
@@ -392,9 +406,12 @@ export class GoogleMapsTools {
           text: firstRoute.duration || ""
         }
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in getDirections (Routes API):", error);
-      throw new Error("Error occurred while getting directions (Routes API)");
+      if (error.response?.data?.error) {
+        throw new Error(error.response.data.error.message);
+      }
+      throw error;
     }
   }
 
@@ -424,9 +441,12 @@ export class GoogleMapsTools {
           lng: result.location.lng
         }
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error in getElevation:", error);
-      throw new Error("Error occurred while getting elevation data");
+      if (error.response?.data?.error_message) {
+        throw new Error(error.response.data.error_message);
+      }
+      throw error;
     }
   }
 }

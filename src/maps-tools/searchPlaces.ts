@@ -96,17 +96,9 @@ export class PlacesSearcher {
           open_now: place.opening_hours?.open_now,
         })),
       };
-    } catch (error) {
-      let errorMsg = "An error occurred during search";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -134,17 +126,9 @@ export class PlacesSearcher {
           })),
         },
       };
-    } catch (error) {
-      let errorMsg = "An error occurred while getting details";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -156,17 +140,9 @@ export class PlacesSearcher {
         success: true,
         data: result,
       };
-    } catch (error) {
-      let errorMsg = "An error occurred during geocoding";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -178,17 +154,9 @@ export class PlacesSearcher {
         success: true,
         data: result,
       };
-    } catch (error) {
-      let errorMsg = "An error occurred during reverse geocoding";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -200,17 +168,9 @@ export class PlacesSearcher {
         success: true,
         data: result,
       };
-    } catch (error) {
-      let errorMsg = "An error occurred while calculating distance matrix";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -222,17 +182,9 @@ export class PlacesSearcher {
         success: true,
         data: result,
       };
-    } catch (error) {
-      let errorMsg = "An error occurred while getting directions";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 
@@ -244,17 +196,9 @@ export class PlacesSearcher {
         success: true,
         data: result,
       };
-    } catch (error) {
-      let errorMsg = "An error occurred while getting elevation data";
-      if (error && typeof error === 'object' && 'response' in error && (error as any).response?.data?.error?.message) {
-        errorMsg = (error as any).response.data.error.message;
-      } else if (error instanceof Error) {
-        errorMsg = error.message;
-      }
-      return {
-        success: false,
-        error: errorMsg,
-      };
+    } catch (e) {
+      const error = e as Error;
+      return { success: false, error: error.message };
     }
   }
 }
