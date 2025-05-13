@@ -1,5 +1,6 @@
 import { Client, Language, TravelMode } from "@googlemaps/google-maps-services-js";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
+import axios from "axios";
 
 // Ensure environment variables are loaded
 dotenv.config();
@@ -265,44 +266,50 @@ export class GoogleMapsTools {
     total_duration: { value: number; text: string };
   }> {
     try {
-      const response = await this.client.directions({
-        params: {
-          origin: origin,
-          destination: destination,
-          mode: mode as TravelMode,
-          language: this.defaultLanguage,
-          key: process.env.GOOGLE_MAPS_API_KEY || "",
+      // Map legacy modes to Routes API travelMode
+      const travelModeMap: Record<string, string> = {
+        driving: "DRIVE",
+        walking: "WALK",
+        bicycling: "BICYCLE",
+        transit: "TRANSIT"
+      };
+      const travelMode = travelModeMap[mode] || "DRIVE";
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      if (!apiKey) throw new Error("Google Maps API Key is required");
+      const response = await axios.post(
+        "https://routes.googleapis.com/directions/v2:computeRoutes",
+        {
+          origin: { address: origin },
+          destination: { address: destination },
+          travelMode
         },
-      });
-
-      const result = response.data;
-
-      if (result.status !== "OK") {
-        throw new Error(`Failed to get directions: ${result.status}`);
-      }
-
-      if (result.routes.length === 0) {
-        throw new Error("No route found");
-      }
-
-      const route = result.routes[0];
-      const legs = route.legs[0];
-
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": apiKey,
+            "X-Goog-FieldMask": "routes.duration,routes.distanceMeters,routes.legs,routes.routeLabels"
+          }
+        }
+      );
+      const routes = response.data.routes || [];
+      if (routes.length === 0) throw new Error("No route found");
+      const firstRoute = routes[0];
+      const legs = firstRoute.legs && firstRoute.legs[0];
       return {
-        routes: result.routes,
-        summary: route.summary,
+        routes,
+        summary: firstRoute.routeLabels ? firstRoute.routeLabels.join(", ") : "",
         total_distance: {
-          value: legs.distance.value,
-          text: legs.distance.text,
+          value: firstRoute.distanceMeters,
+          text: firstRoute.distanceMeters ? `${firstRoute.distanceMeters / 1000} km` : ""
         },
         total_duration: {
-          value: legs.duration.value,
-          text: legs.duration.text,
-        },
+          value: firstRoute.duration ? parseInt(firstRoute.duration.replace(/[^\d]/g, ""), 10) : 0,
+          text: firstRoute.duration || ""
+        }
       };
     } catch (error) {
-      console.error("Error in getDirections:", error);
-      throw new Error("Error occurred while getting directions");
+      console.error("Error in getDirections (Routes API):", error);
+      throw new Error("Error occurred while getting directions (Routes API)");
     }
   }
 
