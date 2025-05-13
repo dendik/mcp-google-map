@@ -1,35 +1,35 @@
 export const SEARCH_NEARBY_TOOL = {
   name: "search_nearby",
-  description: "搜尋附近的地點",
+  description: "Search for nearby places",
   inputSchema: {
     type: "object",
     properties: {
       center: {
         type: "object",
         properties: {
-          value: { type: "string", description: "地址、地標名稱或經緯度座標(經緯度座標格式: lat,lng)" },
-          isCoordinates: { type: "boolean", description: "是否為經緯度座標", default: false },
+          value: { type: "string", description: "Address, landmark name, or coordinates (coordinate format: lat,lng)" },
+          isCoordinates: { type: "boolean", description: "Whether the input is coordinates", default: false },
         },
         required: ["value"],
-        description: "搜尋中心點",
+        description: "Search center point",
       },
       keyword: {
         type: "string",
-        description: "搜尋關鍵字（例如：餐廳、咖啡廳）",
+        description: "Search keyword (e.g., restaurant, cafe)",
       },
       radius: {
         type: "number",
-        description: "搜尋半徑（公尺）",
+        description: "Search radius (meters)",
         default: 1000,
       },
       openNow: {
         type: "boolean",
-        description: "是否只顯示營業中的地點",
+        description: "Show only places that are currently open",
         default: false,
       },
       minRating: {
         type: "number",
-        description: "最低評分要求（0-5）",
+        description: "Minimum rating requirement (0-5)",
         minimum: 0,
         maximum: 5,
       },
@@ -40,13 +40,13 @@ export const SEARCH_NEARBY_TOOL = {
 
 export const GEOCODE_TOOL = {
   name: "maps_geocode",
-  description: "將地址轉換為座標",
+  description: "Convert address to coordinates",
   inputSchema: {
     type: "object",
     properties: {
       address: {
         type: "string",
-        description: "要轉換的地址或地標名稱",
+        description: "Address or landmark name to convert",
       },
     },
     required: ["address"],
@@ -55,17 +55,17 @@ export const GEOCODE_TOOL = {
 
 export const REVERSE_GEOCODE_TOOL = {
   name: "maps_reverse_geocode",
-  description: "將座標轉換為地址",
+  description: "Convert coordinates to address",
   inputSchema: {
     type: "object",
     properties: {
       latitude: {
         type: "number",
-        description: "緯度",
+        description: "Latitude",
       },
       longitude: {
         type: "number",
-        description: "經度",
+        description: "Longitude",
       },
     },
     required: ["latitude", "longitude"],
@@ -74,7 +74,7 @@ export const REVERSE_GEOCODE_TOOL = {
 
 export const DISTANCE_MATRIX_TOOL = {
   name: "maps_distance_matrix",
-  description: "計算多個起點和終點之間的距離和時間",
+  description: "Calculate distance and time between multiple origins and destinations",
   inputSchema: {
     type: "object",
     properties: {
@@ -83,19 +83,19 @@ export const DISTANCE_MATRIX_TOOL = {
         items: {
           type: "string",
         },
-        description: "起點地址或座標列表",
+        description: "List of origin addresses or coordinates",
       },
       destinations: {
         type: "array",
         items: {
           type: "string",
         },
-        description: "終點地址或座標列表",
+        description: "List of destination addresses or coordinates",
       },
       mode: {
         type: "string",
         enum: ["driving", "walking", "bicycling", "transit"],
-        description: "交通模式",
+        description: "Travel mode",
         default: "driving",
       },
     },
@@ -105,22 +105,22 @@ export const DISTANCE_MATRIX_TOOL = {
 
 export const DIRECTIONS_TOOL = {
   name: "maps_directions",
-  description: "獲取兩點之間的路線指引",
+  description: "Get directions between two points",
   inputSchema: {
     type: "object",
     properties: {
       origin: {
         type: "string",
-        description: "起點地址或座標",
+        description: "Origin address or coordinates",
       },
       destination: {
         type: "string",
-        description: "終點地址或座標",
+        description: "Destination address or coordinates",
       },
       mode: {
         type: "string",
         enum: ["driving", "walking", "bicycling", "transit"],
-        description: "交通模式",
+        description: "Travel mode",
         default: "driving",
       },
     },
@@ -130,7 +130,7 @@ export const DIRECTIONS_TOOL = {
 
 export const ELEVATION_TOOL = {
   name: "maps_elevation",
-  description: "獲取位置的海拔數據",
+  description: "Get elevation data for locations",
   inputSchema: {
     type: "object",
     properties: {
@@ -141,16 +141,16 @@ export const ELEVATION_TOOL = {
           properties: {
             latitude: {
               type: "number",
-              description: "緯度",
+              description: "Latitude",
             },
             longitude: {
               type: "number",
-              description: "經度",
+              description: "Longitude",
             },
           },
           required: ["latitude", "longitude"],
         },
-        description: "要獲取海拔數據的位置列表",
+        description: "List of locations to get elevation data for",
       },
     },
     required: ["locations"],
@@ -159,13 +159,13 @@ export const ELEVATION_TOOL = {
 
 export const GET_PLACE_DETAILS_TOOL = {
   name: "get_place_details",
-  description: "獲取特定地點的詳細資訊",
+  description: "Get detailed information about a specific place",
   inputSchema: {
     type: "object",
     properties: {
       placeId: {
         type: "string",
-        description: "Google Maps 地點 ID",
+        description: "Google Maps Place ID",
       },
     },
     required: ["placeId"],
