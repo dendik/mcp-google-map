@@ -62,7 +62,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         content: [
           {
             type: "text",
-            text: `location: ${JSON.stringify(result.location, null, 2)}\n` + JSON.stringify(result.data, null, 2),
+            text: JSON.stringify({
+              location: result.location,
+              results: result.data
+            }, null, 2),
           },
         ],
         isError: false,
@@ -147,8 +150,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
     if (name === "maps_distance_matrix") {
       const { origins, destinations, mode } = args as {
-        origins: string[];
-        destinations: string[];
+        origins: string[] | string;
+        destinations: string[] | string;
         mode?: "driving" | "walking" | "bicycling" | "transit";
       };
 

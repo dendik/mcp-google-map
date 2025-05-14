@@ -287,8 +287,8 @@ export class GoogleMapsTools {
   }
 
   async calculateDistanceMatrix(
-    origins: string[],
-    destinations: string[],
+    origins: string[] | string,
+    destinations: string[] | string,
     mode: "driving" | "walking" | "bicycling" | "transit" = "driving"
   ): Promise<{
     distances: any[][];
@@ -297,10 +297,14 @@ export class GoogleMapsTools {
     destination_addresses: string[];
   }> {
     try {
+      // Handle pipe-separated coordinates for both origins and destinations
+      const originsArray = typeof origins === 'string' ? origins.split('|') : origins;
+      const destinationsArray = typeof destinations === 'string' ? destinations.split('|') : destinations;
+
       const response = await this.client.distancematrix({
         params: {
-          origins: origins,
-          destinations: destinations,
+          origins: originsArray,
+          destinations: destinationsArray,
           mode: mode as TravelMode,
           language: this.defaultLanguage,
           key: process.env.GOOGLE_MAPS_API_KEY || "",

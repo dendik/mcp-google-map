@@ -160,7 +160,7 @@ export class PlacesSearcher {
     }
   }
 
-  async calculateDistanceMatrix(origins: string[], destinations: string[], mode: "driving" | "walking" | "bicycling" | "transit" = "driving"): Promise<DistanceMatrixResponse> {
+  async calculateDistanceMatrix(origins: string[] | string, destinations: string[] | string, mode: "driving" | "walking" | "bicycling" | "transit" = "driving"): Promise<DistanceMatrixResponse> {
     try {
       const result = await this.mapsTools.calculateDistanceMatrix(origins, destinations, mode);
 
