@@ -164,8 +164,7 @@ async function runEndToEndTests() {
               lat: 40.7100842,
               lng: -74.007677
             },
-            rating: 4.6,
-            total_ratings: 5570
+            rating: 4.6
           },
           "__prefix_only__"
         ]
